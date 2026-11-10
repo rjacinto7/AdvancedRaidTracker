@@ -8,6 +8,8 @@ public enum RaidType
     COX(0, "CoX", ""),
     INFERNO(5, "Inferno", "<html><font color='#ffa500'>"),
     COLOSSEUM(4, "Colosseum", "<html><font color='#77BBFF'>"),
+    //Keep new raid types at the end: several UI lists are indexed by ordinal
+    TFA(6, "TFA", "<html><font color='#B68CFF'>"),
     ;
 
     public final int value;

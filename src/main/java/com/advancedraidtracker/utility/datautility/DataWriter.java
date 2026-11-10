@@ -227,7 +227,7 @@ public class DataWriter
                 {
                     log.info("Could not parse file " + logFile.getAbsolutePath() + ", last line: " + lastLine);
                 }
-                currentBuffer.add("," + lastTime + "," + currentRaidType.value + "," + ((1000 * (currentRaidType.value - 1)) + 4) + "," + "," + "," + "," + ",");
+                currentBuffer.add("," + lastTime + "," + currentRaidType.value + "," + ((currentRaidType == RaidType.TOA) ? LogID.LEFT_TOA.getId() : LogID.LEFT_TOB.getId()) + "," + "," + "," + "," + ",");
                 writeFile();
             }
         }

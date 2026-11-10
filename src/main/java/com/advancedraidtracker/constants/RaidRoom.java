@@ -46,6 +46,9 @@ public enum RaidRoom
     WAVE_67_INF(212, "Wave 67"),
     WAVE_68_INF(213, "Wave 68"),
     WAVE_69_INF(214, "Wave 69"),*/
+    //The Fractured Archive. Names are single words because the statistics UI strips the first word of a datapoint to get its label
+    ARCHIVE_GUARDIAN(40, "Guardian"), EZEKIEL(41, "Ezekiel"), BORK(42, "Bork"), MOIA(43, "Moia"), DREADNOTH(44, "Dreadnoth"),
+    DAGONHAI(45, "Dagon'hai"), XARTH(46, "Xarth"), OCELLUS(47, "Ocellus"),
     ANY(17, "Any"), ALL(18, "All"),
 
     ;
@@ -79,6 +82,8 @@ public enum RaidRoom
                 return Arrays.stream(RaidRoom.values()).filter(RaidRoom::isColo).collect(Collectors.toList());
             case INFERNO:
                 return Arrays.stream(RaidRoom.values()).filter(RaidRoom::isInferno).collect(Collectors.toList());
+            case TFA:
+                return Arrays.stream(RaidRoom.values()).filter(RaidRoom::isTFA).collect(Collectors.toList());
             case ALL:
                 return Arrays.stream(RaidRoom.values()).filter(RaidRoom::isOther).collect(Collectors.toList());
         }
@@ -88,6 +93,11 @@ public enum RaidRoom
     public boolean isOther()
     {
         return this.equals(ANY_TOA) || this.equals(ANY_TOB) || this.equals(ANY) || this.equals(ALL);
+    }
+
+    public boolean isTFA()
+    {
+        return this.value >= ARCHIVE_GUARDIAN.value && this.value <= OCELLUS.value;
     }
 
     public boolean isColo()

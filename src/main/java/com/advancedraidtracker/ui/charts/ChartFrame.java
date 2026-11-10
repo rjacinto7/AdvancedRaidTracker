@@ -11,6 +11,7 @@ import com.advancedraidtracker.utility.datautility.DataReader;
 import com.advancedraidtracker.utility.datautility.datapoints.col.Colo;
 import com.advancedraidtracker.utility.datautility.datapoints.Raid;
 import com.advancedraidtracker.utility.datautility.datapoints.inf.Inf;
+import com.advancedraidtracker.utility.datautility.datapoints.tfa.Tfa;
 import com.advancedraidtracker.utility.datautility.datapoints.toa.Toa;
 import java.awt.event.ComponentListener;
 import static java.awt.event.KeyEvent.KEY_RELEASED;
@@ -146,6 +147,15 @@ public class ChartFrame extends BaseFrame
         {
             activeSet = InfRooms;
         }
+        else if (roomData instanceof Tfa)
+        {
+            //Only five of the eight bosses are fought in a run
+            activeSet = new LinkedHashSet<>();
+            for (RaidRoom fought : ((Tfa) roomData).getRoomsFought())
+            {
+                activeSet.add(fought.name);
+            }
+        }
         else
         {
             activeSet = TOBRooms;
@@ -169,7 +179,12 @@ public class ChartFrame extends BaseFrame
             chartPanel.setRoomHP(chartData.getHPMapping(room));
             chartPanel.setAttackers(new ArrayList<>(roomData.getPlayers()));
             chartPanel.enableWrap();
-            if (bossName.contains("Wave"))
+            if (roomData instanceof Tfa)
+            {
+                chartPanel.setStartTick(1);
+                chartPanel.setEndTick(((Tfa) roomData).getChartEndTick(room));
+            }
+            else if (bossName.contains("Wave"))
             {
                 int starttick = 1;
                 if(roomData instanceof Inf)

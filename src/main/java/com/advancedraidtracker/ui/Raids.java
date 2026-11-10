@@ -20,6 +20,8 @@ import com.advancedraidtracker.utility.*;
 import com.advancedraidtracker.utility.datautility.*;
 import com.advancedraidtracker.utility.datautility.datapoints.Raid;
 import com.advancedraidtracker.utility.datautility.datapoints.col.Colo;
+import com.advancedraidtracker.utility.datautility.datapoints.tfa.Tfa;
+import com.advancedraidtracker.constants.TfaIDs;
 import com.advancedraidtracker.utility.datautility.datapoints.inf.Inf;
 import com.advancedraidtracker.utility.datautility.datapoints.toa.Toa;
 import com.advancedraidtracker.utility.datautility.datapoints.tob.Tob;
@@ -95,6 +97,7 @@ public class Raids extends BaseFrame implements UpdateableWindow
     JCheckBox filterIncludeTOA;
     JCheckBox filterIncludeInferno;
     JCheckBox filterIncludeColosseum;
+    JCheckBox filterIncludeTFA;
 
     JTable table;
     JPanel container;
@@ -195,10 +198,13 @@ public class Raids extends BaseFrame implements UpdateableWindow
                 maxLabels2.get(index).put(labelName, getThemedLabel("", SwingConstants.RIGHT));
                 minLabels2.get(index).put(labelName, getThemedLabel("", SwingConstants.RIGHT));
             }
-            averageLabels2.get(index).put("Sum", getThemedLabel("", SwingConstants.RIGHT));
-            medianLabels2.get(index).put("Sum", getThemedLabel("", SwingConstants.RIGHT));
-            maxLabels2.get(index).put("Sum", getThemedLabel("", SwingConstants.RIGHT));
-            minLabels2.get(index).put("Sum", getThemedLabel("", SwingConstants.RIGHT));
+            if (raidType != RaidType.TFA) //only five of the eight TFA bosses are fought per run, a sum of every room would be meaningless
+            {
+                averageLabels2.get(index).put("Sum", getThemedLabel("", SwingConstants.RIGHT));
+                medianLabels2.get(index).put("Sum", getThemedLabel("", SwingConstants.RIGHT));
+                maxLabels2.get(index).put("Sum", getThemedLabel("", SwingConstants.RIGHT));
+                minLabels2.get(index).put("Sum", getThemedLabel("", SwingConstants.RIGHT));
+            }
             averageLabels2.get(index).put("Challenge", getThemedLabel("", SwingConstants.RIGHT));
             medianLabels2.get(index).put("Challenge", getThemedLabel("", SwingConstants.RIGHT));
             maxLabels2.get(index).put("Challenge", getThemedLabel("", SwingConstants.RIGHT));
@@ -260,6 +266,8 @@ public class Raids extends BaseFrame implements UpdateableWindow
         int coxAttempts = 0;
         int infAttempts = 0;
         int colAttempts = 0;
+        int tfaAttempts = 0;
+        int tfaCompletions = 0;
         int tobCompletions = 0;
         int toaCompletions = 0;
         int coxCompletions = 0;
@@ -348,6 +356,13 @@ public class Raids extends BaseFrame implements UpdateableWindow
             if (!filterIncludeColosseum.isSelected())
             {
                 if (data instanceof Colo)
+                {
+                    shouldDataBeIncluded = false;
+                }
+            }
+            if (!filterIncludeTFA.isSelected())
+            {
+                if (data instanceof Tfa)
                 {
                     shouldDataBeIncluded = false;
                 }
@@ -482,14 +497,21 @@ public class Raids extends BaseFrame implements UpdateableWindow
                     {
                         colCompletions++;
                     }
+                } else if (data instanceof Tfa)
+                {
+                    tfaAttempts++;
+                    if (data.isCompleted() && data.isAccurate())
+                    {
+                        tfaCompletions++;
+                    }
                 }
                 tableData.add(data);
             }
         }
-        attempts = tobAttempts + toaAttempts + coxAttempts + infAttempts + colAttempts;
-        completions = tobCompletions + toaCompletions + coxCompletions + infCompletions + colCompletions;
+        attempts = tobAttempts + toaAttempts + coxAttempts + infAttempts + colAttempts + tfaAttempts;
+        completions = tobCompletions + toaCompletions + coxCompletions + infCompletions + colCompletions + tfaCompletions;
 
-        setTitle("Raids: " + attempts + ", Completions: " + completions + ". Tob: " + tobCompletions + "/" + tobAttempts + ", Toa: " + toaCompletions + "/" + toaAttempts + ", Cox: " + coxCompletions + "/" + coxAttempts + ", Inf: " + infCompletions + "/" + infAttempts + ", Col: " + colCompletions + "/" + colAttempts);
+        setTitle("Raids: " + attempts + ", Completions: " + completions + ". Tob: " + tobCompletions + "/" + tobAttempts + ", Toa: " + toaCompletions + "/" + toaAttempts + ", Cox: " + coxCompletions + "/" + coxAttempts + ", Inf: " + infCompletions + "/" + infAttempts + ", Col: " + colCompletions + "/" + colAttempts + ", TFA: " + tfaCompletions + "/" + tfaAttempts);
 
         tableData = handleTableSort(tableData);
         ArrayList<String> columnNamesDynamic = new ArrayList<>();
@@ -813,6 +835,7 @@ public class Raids extends BaseFrame implements UpdateableWindow
         List<Raid> coxData = new ArrayList<>();
         List<Raid> infData = new ArrayList<>();
         List<Raid> colData = new ArrayList<>();
+        List<Raid> tfaData = new ArrayList<>();
         for (Raid raidData : data)
         {
             if (raidData instanceof Tob) //check if this can just be passed as the raid and not sort into lists per raid //todo
@@ -830,6 +853,9 @@ public class Raids extends BaseFrame implements UpdateableWindow
             } else if (raidData instanceof Colo)
             {
                 colData.add(raidData);
+            } else if (raidData instanceof Tfa)
+            {
+                tfaData.add(raidData);
             }
         }
         setOverallLabels(data);
@@ -852,6 +878,10 @@ public class Raids extends BaseFrame implements UpdateableWindow
         for (StatisticTab tab : colTabs)
         {
             tab.updateTab(colData);
+        }
+        for (StatisticTab tab : tfaTabs)
+        {
+            tab.updateTab(tfaData);
         }
     }
 
@@ -892,7 +922,7 @@ public class Raids extends BaseFrame implements UpdateableWindow
         setOverallMaxLabels(ammendedData);
     }
 
-    private static RaidType[] raids = {RaidType.TOB, RaidType.TOA, RaidType.INFERNO, RaidType.COLOSSEUM, ALL, ALL};
+    private static RaidType[] raids = {RaidType.TOB, RaidType.TOA, RaidType.INFERNO, RaidType.COLOSSEUM, RaidType.TFA, ALL, ALL};
 
     public void setOverallAverageLabels(List<Raid> data)
     {
@@ -1109,6 +1139,7 @@ public class Raids extends BaseFrame implements UpdateableWindow
     public List<StatisticTab> coxTabs = new ArrayList<>();
     public List<StatisticTab> infTabs = new ArrayList<>();
     public List<StatisticTab> colTabs = new ArrayList<>();
+    public List<StatisticTab> tfaTabs = new ArrayList<>();
 
     private String lastColumnClicked = "Date";
     private boolean isSortReversed = true;
@@ -1289,14 +1320,16 @@ public class Raids extends BaseFrame implements UpdateableWindow
         JTabbedPane coxTabSubpanel = getThemedTabbedPane();
         JTabbedPane infTabSubpanel = getThemedTabbedPane();
         JTabbedPane colTabSubpanel = getThemedTabbedPane();
+        JTabbedPane tfaTabSubpanel = getThemedTabbedPane();
 
         tobTabSubpanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         toaTabSubpanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         coxTabSubpanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         infTabSubpanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         colTabSubpanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        tfaTabSubpanel.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         List<JPanel> overallPanels = new ArrayList<>();
-        for (int k = 0; k < 6; k++)
+        for (int k = 0; k < RaidType.values().length; k++)
         {
             JPanel overallPanel = getThemedPanel();
             JPanel overallAveragePanel = getOverallPanel("Average", averageLabels2.get(k));
@@ -1323,6 +1356,7 @@ public class Raids extends BaseFrame implements UpdateableWindow
         List<Raid> coxData = new ArrayList<>();
         List<Raid> infData = new ArrayList<>();
         List<Raid> colData = new ArrayList<>();
+        List<Raid> tfaData = new ArrayList<>();
         for (Raid raidData : currentData)
         {
             if (raidData instanceof Tob)
@@ -1340,6 +1374,9 @@ public class Raids extends BaseFrame implements UpdateableWindow
             } else if (raidData instanceof Colo)
             {
                 colData.add(raidData);
+            } else if (raidData instanceof Tfa)
+            {
+                tfaData.add(raidData);
             }
         }
         List<Integer> tobIconIDs = new ArrayList<>(Arrays.asList(ItemID.LIL_MAIDEN, ItemID.LIL_BLOAT, ItemID.LIL_NYLO, ItemID.LIL_SOT, ItemID.LIL_XARP, ItemID.LIL_ZIK));
@@ -1352,6 +1389,7 @@ public class Raids extends BaseFrame implements UpdateableWindow
         coxTabSubpanel.addTab("Overall", overallPanels.get(3));
         infTabSubpanel.addTab("Overall", overallPanels.get(4));
         colTabSubpanel.addTab("Overall", overallPanels.get(5));
+        tfaTabSubpanel.addTab("Overall", overallPanels.get(RaidType.TFA.ordinal()));
 
         for (RaidRoom room : RaidRoom.getRaidRoomsForRaidType(RaidType.TOB))
         {
@@ -1394,6 +1432,13 @@ public class Raids extends BaseFrame implements UpdateableWindow
             colTabs.add(statisticTab);
         }
 
+        for (RaidRoom room : RaidRoom.getRaidRoomsForRaidType(RaidType.TFA))
+        {
+            StatisticTab statisticTab = new StatisticTab(tfaData, room.name, config);
+            tfaTabSubpanel.addTab(room.name, statisticTab);
+            tfaTabs.add(statisticTab);
+        }
+
         tabbedPane.setMinimumSize(new Dimension(100, 300));
 
         JPanel additionalFiltersPanel = getTitledPanel("Quick Filters");
@@ -1422,6 +1467,8 @@ public class Raids extends BaseFrame implements UpdateableWindow
         filterIncludeCOX = getActionListenCheckBox("CoX", true, al -> quickFilterStateChanged());
         filterIncludeInferno = getActionListenCheckBox("Inferno", true, al -> quickFilterStateChanged());
         filterIncludeColosseum = getActionListenCheckBox("Colosseum", true, al -> quickFilterStateChanged());
+        filterIncludeTFA = getActionListenCheckBox("TFA", true, al -> quickFilterStateChanged());
+        filterIncludeTFA.setToolTipText("The Fractured Archive");
 
         loadQuickFilters();
 
@@ -1445,6 +1492,7 @@ public class Raids extends BaseFrame implements UpdateableWindow
         //filterHolder.add(filterIncludeCOX); //todo for later
         filterHolder.add(filterIncludeInferno);
         filterHolder.add(filterIncludeColosseum);
+        filterHolder.add(filterIncludeTFA);
 
         filterHolder.add(filterIncludeNormal);
         filterHolder.add(filterIncludeHard);
@@ -1466,6 +1514,7 @@ public class Raids extends BaseFrame implements UpdateableWindow
         //tabbedPane.addTab("", coxTabSubpanel);
         tabbedPane.addTab("", infTabSubpanel);
         tabbedPane.addTab("", colTabSubpanel);
+        tabbedPane.addTab("", tfaTabSubpanel);
 
         tabbedPane.addChangeListener(cl ->
         {
@@ -1480,6 +1529,8 @@ public class Raids extends BaseFrame implements UpdateableWindow
         //tabbedPane.setIconAt(2, new ImageIcon(itemManager.getImage(ItemID.TWISTED_BOW)));
         tabbedPane.setIconAt(2, new ImageIcon(itemManager.getImage(ItemID.INFERNAL_CAPE)));
         tabbedPane.setIconAt(3, new ImageIcon(itemManager.getImage(ItemID.DIZANAS_QUIVER)));
+        tabbedPane.setIconAt(4, new ImageIcon(itemManager.getImage(TfaIDs.OBLIGATOR_ITEM)));
+        tabbedPane.setToolTipTextAt(4, "The Fractured Archive");
 
         topContainer.add(tabbedPane);
         topContainer.add(additionalFiltersPanel);
@@ -2166,6 +2217,7 @@ public class Raids extends BaseFrame implements UpdateableWindow
         quickFiltersState.add("QF-CoX:" + filterIncludeCOX.isSelected());
         quickFiltersState.add("QF-Inferno:" + filterIncludeInferno.isSelected());
         quickFiltersState.add("QF-Colosseum:" + filterIncludeColosseum.isSelected());
+        quickFiltersState.add("QF-TFA:" + filterIncludeTFA.isSelected());
         quickFiltersState.add("QF-Normal Mode Only:" + filterIncludeNormal.isSelected());
         quickFiltersState.add("QF-Include Hard Mode:" + filterIncludeHard.isSelected());
         quickFiltersState.add("QF-Include Entry Mode:" + filterIncludeEntry.isSelected());
@@ -2598,6 +2650,9 @@ public class Raids extends BaseFrame implements UpdateableWindow
                             break;
                         case "Colosseum":
                             filterIncludeColosseum.setSelected(Boolean.parseBoolean(data[1]));
+                            break;
+                        case "TFA":
+                            filterIncludeTFA.setSelected(Boolean.parseBoolean(data[1]));
                             break;
                         case "Normal Mode Only":
                             filterIncludeNormal.setSelected(Boolean.parseBoolean(data[1]));

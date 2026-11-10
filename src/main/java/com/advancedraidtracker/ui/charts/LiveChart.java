@@ -42,6 +42,8 @@ public class LiveChart extends BaseFrame
     Map<String, ChartPanel> tobPanels;
     Map<String, ChartPanel> colPanels;
     Map<String, ChartPanel> infPanels;
+    String[] tfa = {"Guardian", "Ezekiel", "Bork", "Moia", "Dreadnoth", "Dagon'hai", "Xarth", "Ocellus"};
+    Map<String, ChartPanel> tfaPanels;
     RaidType activeRaid = RaidType.ALL;
     Map<String, ChartPanel> currentPanels;
 
@@ -57,6 +59,7 @@ public class LiveChart extends BaseFrame
         tobPanels = new LinkedHashMap<>();
         colPanels = new LinkedHashMap<>();
         infPanels = new LinkedHashMap<>();
+        tfaPanels = new LinkedHashMap<>();
         currentPanels = tobPanels;
 
         for (String name : tob)
@@ -81,6 +84,12 @@ public class LiveChart extends BaseFrame
         {
             ChartPanel chartPanel = new ChartPanel(name, true, config, clientThread, configManager, itemManager, spriteManager);
             infPanels.put(name, chartPanel);
+        }
+
+        for (String name : tfa)
+        {
+            ChartPanel chartPanel = new ChartPanel(name, true, config, clientThread, configManager, itemManager, spriteManager);
+            tfaPanels.put(name, chartPanel);
         }
 
         tabbedPane = getThemedTabbedPane();
@@ -108,6 +117,11 @@ public class LiveChart extends BaseFrame
                 case INFERNO:
                     activePanel = inf[tabbedPane.getSelectedIndex()];
                     currentPanels = infPanels;
+                    break;
+                case TFA:
+                    activePanel = tfa[tabbedPane.getSelectedIndex()];
+                    currentPanels = tfaPanels;
+                    break;
             }
             currentPanels.values().forEach(panel -> panel.setActive(false));
             if (activePanel == null)
@@ -150,6 +164,9 @@ public class LiveChart extends BaseFrame
                 } else if (activeRaid.equals(INFERNO))
                 {
                     activePanel = inf[tabbedPane.getSelectedIndex()];
+                } else if (activeRaid.equals(TFA))
+                {
+                    activePanel = tfa[tabbedPane.getSelectedIndex()];
                 }
                 if (activePanel == null)
                 {
@@ -180,6 +197,10 @@ public class LiveChart extends BaseFrame
                 {
                     infPanels.get(name).setActive(false);
                 }
+                for (String name : tfaPanels.keySet())
+                {
+                    tfaPanels.get(name).setActive(false);
+                }
             }
         });
         addComponentListener(new ComponentAdapter()
@@ -202,6 +223,10 @@ public class LiveChart extends BaseFrame
                     p.setSize(c.getWidth(), c.getHeight());
                 }
                 for (ChartPanel p : infPanels.values())
+                {
+                    p.setSize(c.getWidth(), c.getHeight());
+                }
+                for (ChartPanel p : tfaPanels.values())
                 {
                     p.setSize(c.getWidth(), c.getHeight());
                 }
@@ -247,6 +272,16 @@ public class LiveChart extends BaseFrame
         }
     }
 
+    public void switchToTFA()
+    {
+        activeRaid = TFA;
+        tabbedPane.removeAll();
+        for (String name : tfaPanels.keySet())
+        {
+            tabbedPane.add(name, tfaPanels.get(name));
+        }
+    }
+
     public void switchToCol()
     {
         activeRaid = COLOSSEUM;
@@ -271,6 +306,9 @@ public class LiveChart extends BaseFrame
         } else if (infPanels.containsKey(room))
         {
             return infPanels.get(room);
+        } else if (tfaPanels.containsKey(room))
+        {
+            return tfaPanels.get(room);
         } else
         {
             return new ChartPanel("", true, config, clientThread, configManager, itemManager, spriteManager);
@@ -320,6 +358,10 @@ public class LiveChart extends BaseFrame
         {
             infPanels.get(name).resetGraph();
         }
+        for (String name : tfaPanels.keySet())
+        {
+            tfaPanels.get(name).resetGraph();
+        }
     }
 
     public void redrawAll()
@@ -339,6 +381,10 @@ public class LiveChart extends BaseFrame
         for (String name : infPanels.keySet())
         {
             infPanels.get(name).redraw();
+        }
+        for (String name : tfaPanels.keySet())
+        {
+            tfaPanels.get(name).redraw();
         }
     }
 
@@ -364,6 +410,10 @@ public class LiveChart extends BaseFrame
         for (String name : infPanels.keySet())
         {
             infPanels.get(name).setAttackers(cleanedPlayers);
+        }
+        for (String name : tfaPanels.keySet())
+        {
+            tfaPanels.get(name).setAttackers(cleanedPlayers);
         }
     }
 }

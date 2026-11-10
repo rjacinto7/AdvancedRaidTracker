@@ -283,11 +283,36 @@ public enum DataPoint
     INFERNO_WAVE_STARTS("Inferno Wave Starts", types.INT_MAP, INFERNO, MenuType.EXCLUDED, false),
     INFERNO_WAVE_DURATIONS("Inferno Wave Durations", types.INT_MAP, INFERNO, MenuType.EXCLUDED, false),
 
+    //The Fractured Archive. "<Room> Split" is the raid timer at the moment that room was completed.
+    GUARDIAN_TIME("Guardian Time", types.TIME, ARCHIVE_GUARDIAN, MenuType.TIME),
+    GUARDIAN_SPLIT("Guardian Split", types.TIME_SPLIT, ARCHIVE_GUARDIAN, MenuType.TIME),
+    EZEKIEL_TIME("Ezekiel Time", types.TIME, EZEKIEL, MenuType.TIME),
+    EZEKIEL_SPLIT("Ezekiel Split", types.TIME_SPLIT, EZEKIEL, MenuType.TIME),
+    BORK_TIME("Bork Time", types.TIME, BORK, MenuType.TIME),
+    BORK_SPLIT("Bork Split", types.TIME_SPLIT, BORK, MenuType.TIME),
+    MOIA_TIME("Moia Time", types.TIME, MOIA, MenuType.TIME),
+    MOIA_SPLIT("Moia Split", types.TIME_SPLIT, MOIA, MenuType.TIME),
+    DREADNOTH_TIME("Dreadnoth Time", types.TIME, DREADNOTH, MenuType.TIME),
+    DREADNOTH_SPLIT("Dreadnoth Split", types.TIME_SPLIT, DREADNOTH, MenuType.TIME),
+    DAGONHAI_TIME("Dagon'hai Time", types.TIME, DAGONHAI, MenuType.TIME),
+    DAGONHAI_SPLIT("Dagon'hai Split", types.TIME_SPLIT, DAGONHAI, MenuType.TIME),
+    XARTH_TIME("Xarth Time", types.TIME, XARTH, MenuType.TIME),
+    XARTH_SPLIT("Xarth Split", types.TIME_SPLIT, XARTH, MenuType.TIME),
+    OCELLUS_TIME("Ocellus Time", types.TIME, OCELLUS, MenuType.TIME),
+    OCELLUS_SPLIT("Ocellus Split", types.TIME_SPLIT, OCELLUS, MenuType.TIME),
+    OCELLUS_P1_DURATION("Ocellus P1 Duration", types.TIME_SPLIT, OCELLUS, MenuType.TIME),
+    OCELLUS_P2_SPLIT("Ocellus P2 Split", types.TIME_SPLIT, OCELLUS, MenuType.TIME),
+    OCELLUS_P2_DURATION("Ocellus P2 Duration", types.TIME_SPLIT, OCELLUS, MenuType.TIME),
+    OCELLUS_P3_SPLIT("Ocellus P3 Split", types.TIME_SPLIT, OCELLUS, MenuType.TIME),
+    OCELLUS_P3_DURATION("Ocellus P3 Duration", types.TIME_SPLIT, OCELLUS, MenuType.TIME),
+
 
     ;;
 
     public RaidType getRaidType()
     {
+        if(isTFA())
+            return RaidType.TFA;
         if(isTOA())
             return RaidType.TOA;
         if(isTOB())
@@ -359,6 +384,11 @@ public enum DataPoint
     public boolean isInferno()
     {
         return room.equals(INFERNO);
+    }
+
+    public boolean isTFA()
+    {
+        return room.isTFA();
     }
 
     public boolean isColosseum()

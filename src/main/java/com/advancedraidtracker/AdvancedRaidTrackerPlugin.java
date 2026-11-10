@@ -5,6 +5,7 @@ import com.advancedraidtracker.rooms.RoomHandler;
 import com.advancedraidtracker.rooms.col.ColosseumHandler;
 import com.advancedraidtracker.rooms.cox.*;
 import com.advancedraidtracker.rooms.inf.InfernoHandler;
+import com.advancedraidtracker.rooms.tfa.TFAHandler;
 import com.advancedraidtracker.rooms.toa.*;
 import com.advancedraidtracker.rooms.tob.*;
 import com.advancedraidtracker.ui.charts.ChartIO;
@@ -31,6 +32,7 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
 import net.runelite.api.kit.KitType;
+import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
@@ -76,7 +78,7 @@ import static net.runelite.api.Varbits.TOA_RAID_LEVEL;
 @PluginDescriptor(
         name = "Advanced PVM Tracker",
         description = "Tracking and statistics for various PVM activities",
-        tags = {"timers", "tob", "tracker", "time", "theatre", "analytics", "toa", "inferno", "colosseum", "col", "inf", "pvm", "tombs of amascut"}
+        tags = {"timers", "tob", "tracker", "time", "theatre", "analytics", "toa", "inferno", "colosseum", "col", "inf", "pvm", "tombs of amascut", "tfa", "fractured archive", "raids 4"}
 )
 public class AdvancedRaidTrackerPlugin extends Plugin
 {
@@ -114,6 +116,7 @@ public class AdvancedRaidTrackerPlugin extends Plugin
     private Client client;
 
     private InfernoHandler infernoHandler;
+    private TFAHandler tfaHandler;
     private ColosseumHandler colloseumHandler;
     private TOBLobbyHandler lobbyTOB;
     private MaidenHandler maiden;
@@ -286,6 +289,8 @@ public class AdvancedRaidTrackerPlugin extends Plugin
         tekton = new TektonHandler(client, clog, config, this);
 
         infernoHandler = new InfernoHandler(client, clog, config, this);
+        tfaHandler = new TFAHandler(client, clog, config, this);
+        inTFA = false;
 
         inTheatre = false;
         wasInTheatre = false;
@@ -350,6 +355,153 @@ public class AdvancedRaidTrackerPlugin extends Plugin
 
     private boolean inInferno = false;
     private boolean inColosseum = false;
+    private boolean inTFA = false;
+    //Ticks the player may be outside every known Fractured Archive region (loading, connecting rooms) before the raid is treated as left
+    private static final int TFA_LEAVE_GRACE_TICKS = 5;
+    private int tfaLeaveTicks = 0;
+    private int tfaEnteredTick = 0;
+    private boolean tfaSpectateLogged = false;
+    private List<String> tfaLoggedPlayers = new ArrayList<>();
+
+    /**
+     * @return region the local player is standing in, translated back to the template if inside an instance. -1 if unknown.
+     */
+    private int getLocalPlayerRegion()
+    {
+        Player player = client.getLocalPlayer();
+        if (player == null || player.getLocalLocation() == null)
+        {
+            return -1;
+        }
+        return WorldPoint.fromLocalInstance(client, player.getLocalLocation()).getRegionID();
+    }
+
+    /**
+     * Tracks entering, moving through and leaving The Fractured Archive.
+     * The lobby and all of the boss maps border each other, so unlike the other raids this cannot use the loaded map regions.
+     *
+     * @return true while inside the raid
+     */
+    private boolean updateTFA()
+    {
+        int region = getLocalPlayerRegion();
+        RaidRoom regionRoom = TfaIDs.REGION_TO_ROOM.getOrDefault(region, RaidRoom.UNKNOWN);
+        boolean inRaidRegion = regionRoom != RaidRoom.UNKNOWN || region == TfaIDs.TFA_LOOT_REGION;
+        if (!inTFA)
+        {
+            if (regionRoom == RaidRoom.UNKNOWN || inInferno || inColosseum)
+            {
+                return false;
+            }
+            enteredTFA();
+            tfaHandler.setRegionRoom(regionRoom);
+            return true;
+        }
+        if (!inRaidRegion && region != TfaIDs.TFA_LOBBY_REGION)
+        {
+            //Connecting rooms between bosses are not mapped, the raid HUD staying up covers them
+            Widget hud = client.getWidget(TfaIDs.TFA_HUD_WIDGET);
+            inRaidRegion = hud != null && !hud.isHidden();
+        }
+        tfaLeaveTicks = inRaidRegion ? TFA_LEAVE_GRACE_TICKS : tfaLeaveTicks - 1;
+        if (tfaLeaveTicks <= 0)
+        {
+            leftTFA();
+            return false;
+        }
+        tfaHandler.setRegionRoom(regionRoom);
+        updateTFAParty();
+        return true;
+    }
+
+    private void enteredTFA()
+    {
+        currentRoom = tfaHandler;
+        tfaHandler.startRaid();
+        clog.setRaidType(RaidType.TFA);
+        clog.checkForEndFlag();
+        clog.migrateToNewRaid();
+        clog.addLine(ENTERED_RAID);
+        liveFrame.resetAll();
+        liveFrame.switchToTFA();
+        currentPlayers.clear();
+        tfaLoggedPlayers = new ArrayList<>();
+        tfaSpectateLogged = false;
+        tfaEnteredTick = client.getTickCount();
+        tfaLeaveTicks = TFA_LEAVE_GRACE_TICKS;
+        inTFA = true;
+        inTheatre = true;
+        lastSplits = "";
+        currentDurationSum = 0;
+    }
+
+    private void leftTFA()
+    {
+        if (tfaLoggedPlayers.isEmpty() && client.getLocalPlayer() != null && client.getLocalPlayer().getName() != null)
+        {
+            //Left before the party interface loaded. A raid with no players is discarded when read back.
+            clog.addLine(PARTY_MEMBERS, client.getLocalPlayer().getName());
+        }
+        lastSplits += tfaHandler.getStatusLine();
+        tfaHandler.leaveRaid();
+        inTFA = false;
+        //currentRoom stays as the TFA handler so the generic left raid line in onGameTick records the last room
+    }
+
+    /**
+     * The party list is held in client strings that fill in shortly after entering and change if somebody leaves
+     */
+    private void updateTFAParty()
+    {
+        List<String> names = new ArrayList<>();
+        for (int i = 0; i < TfaIDs.TFA_MAX_PARTY_SIZE; i++)
+        {
+            String name = client.getVarcStrValue(TfaIDs.TFA_PARTY_NAME_VARCSTR_START + i);
+            if (name != null && !Text.sanitize(Text.removeTags(name)).trim().isEmpty())
+            {
+                names.add(Text.sanitize(Text.removeTags(name)).trim());
+            }
+        }
+        if (names.isEmpty())
+        {
+            if (client.getTickCount() - tfaEnteredTick < 10 || client.getLocalPlayer() == null || client.getLocalPlayer().getName() == null)
+            {
+                return;
+            }
+            names.add(Text.sanitize(client.getLocalPlayer().getName()));
+        }
+        if (!tfaSpectateLogged && client.getVarbitValue(TfaIDs.TFA_SPECTATE_MODE_VARBIT) >= 2)
+        {
+            tfaSpectateLogged = true;
+            clog.addLine(SPECTATE);
+        }
+        //Players never leave the logged list, a raid keeps everyone that started it
+        boolean changed = false;
+        for (String name : names)
+        {
+            if (!tfaLoggedPlayers.contains(name))
+            {
+                tfaLoggedPlayers.add(name);
+                changed = true;
+            }
+        }
+        if (!changed)
+        {
+            return;
+        }
+        currentPlayers.clear();
+        currentPlayers.addAll(tfaLoggedPlayers);
+        liveFrame.setPlayers(currentPlayers);
+        String[] players = new String[TfaIDs.TFA_MAX_PARTY_SIZE];
+        for (int i = 0; i < players.length; i++)
+        {
+            players[i] = (i < tfaLoggedPlayers.size()) ? tfaLoggedPlayers.get(i) : "";
+        }
+        clog.addLine(PARTY_MEMBERS, players);
+        tfaHandler.setScale(currentPlayers.size());
+        scale = currentPlayers.size();
+        checkPartyUpdate();
+    }
 
     private void updateRoom()
     {
@@ -444,6 +596,10 @@ public class AdvancedRaidTrackerPlugin extends Plugin
             {
                 activeState = true;
             }
+        }
+        if (updateTFA())
+        {
+            activeState = true;
         }
         if (inRegion(client, LOBBY_REGION))
         {

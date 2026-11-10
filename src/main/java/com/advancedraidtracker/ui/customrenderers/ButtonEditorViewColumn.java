@@ -3,11 +3,13 @@ package com.advancedraidtracker.ui.customrenderers;
 import com.advancedraidtracker.AdvancedRaidTrackerConfig;
 import com.advancedraidtracker.ui.viewraid.colosseum.ViewColosseumFrame;
 import com.advancedraidtracker.ui.viewraid.inferno.ViewInfernoFrame;
+import com.advancedraidtracker.ui.viewraid.tfa.ViewTFARaid;
 import com.advancedraidtracker.ui.viewraid.toa.ViewTOARaid;
 import com.advancedraidtracker.ui.viewraid.tob.ViewTOBRaid;
 import com.advancedraidtracker.utility.datautility.datapoints.Raid;
 import com.advancedraidtracker.utility.datautility.datapoints.col.Colo;
 import com.advancedraidtracker.utility.datautility.datapoints.inf.Inf;
+import com.advancedraidtracker.utility.datautility.datapoints.tfa.Tfa;
 import com.advancedraidtracker.utility.datautility.datapoints.toa.Toa;
 import com.advancedraidtracker.utility.datautility.datapoints.tob.Tob;
 import net.runelite.client.game.ItemManager;
@@ -83,6 +85,11 @@ public class ButtonEditorViewColumn extends DefaultCellEditor
             {
                 Colo colData = (Colo) data.get(row);
                 ViewColosseumFrame raid = new ViewColosseumFrame(colData, config, itemManager);
+                raid.open();
+            } else if (data.get(row) instanceof Tfa)
+            {
+                Tfa tfaData = (Tfa) data.get(row);
+                ViewTFARaid raid = new ViewTFARaid(tfaData, config);
                 raid.open();
             }
 

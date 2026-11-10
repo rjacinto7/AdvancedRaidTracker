@@ -1,6 +1,17 @@
 # Advanced Raid Tracker
 This plugin tracks various advanced statistics and data about various PVM activities.
 
+## Supported content
+Theatre of Blood, Tombs of Amascut, the Inferno, the Fortis Colosseum and The Fractured Archive.
+
+### The Fractured Archive
+Raids are picked up automatically when you enter the first boss room, whether you are in the party or spectating.
+For each of the five bosses fought in a run the plugin records the room time, the raid split at the end of the room,
+deaths, damage dealt/received, prayer used and the attack chart. Ocellus additionally gets P1/P2/P3 times.
+Room and raid times are taken from the game's own "Challenge complete" messages, so enabling precise timing in the
+in-game settings gives tick accurate values; without it room times fall back to the plugin's own tick count.
+Runs show up under the TFA quick filter and statistics tab of the main window.
+
 ## User Interface
 ### Side Bar
 

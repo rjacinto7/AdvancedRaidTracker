@@ -7,6 +7,7 @@ import com.advancedraidtracker.utility.datautility.datapoints.LogEntry;
 import com.advancedraidtracker.utility.datautility.datapoints.Raid;
 import com.advancedraidtracker.utility.datautility.datapoints.RoomParser;
 import com.advancedraidtracker.utility.datautility.datapoints.inf.Inf;
+import com.advancedraidtracker.utility.datautility.datapoints.tfa.Tfa;
 import com.advancedraidtracker.utility.datautility.datapoints.toa.Toa;
 import com.advancedraidtracker.utility.datautility.datapoints.tob.Tob;
 import com.advancedraidtracker.utility.wrappers.DawnSpec;
@@ -64,7 +65,11 @@ public class DataReader //todo move any methods that read files to here. I belie
                 currentRaid.add(entry);
                 if (entry.logEntry == LogID.LEFT_TOB)
                 {
-                    if (path.getFileName().toString().toLowerCase().contains("tob"))
+                    if (path.getFileName().toString().toLowerCase().contains("tfa"))
+                    {
+                        ret = new Tfa(path, currentRaid);
+                        ret.parseAllEntries();
+                    } else if (path.getFileName().toString().toLowerCase().contains("tob"))
                     {
                         ret = new Tob(path, currentRaid);
                         ret.parseAllEntries();

@@ -146,6 +146,10 @@ public abstract class Raid
         {
             setRoomStartAccurate(room);
         }
+        for (RaidRoom room : RaidRoom.getRaidRoomsForRaidType(RaidType.TFA)) //room times come from the game's own chat messages
+        {
+            setRoomStartAccurate(room);
+        }
     }
 
     public boolean getOverallTimeAccurate()

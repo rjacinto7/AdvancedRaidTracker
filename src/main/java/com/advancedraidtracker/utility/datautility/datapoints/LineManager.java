@@ -1,6 +1,7 @@
 package com.advancedraidtracker.utility.datautility.datapoints;
 
 import com.advancedraidtracker.constants.RaidRoom;
+import com.advancedraidtracker.utility.datautility.datapoints.tfa.OcellusParser;
 import com.advancedraidtracker.utility.datautility.datapoints.toa.*;
 import com.advancedraidtracker.utility.datautility.datapoints.tob.*;
 
@@ -32,6 +33,7 @@ public class LineManager
         parsers.put(RaidRoom.HET, new HetParser(raid));
         parsers.put(RaidRoom.AKKHA, new AkkhaParser(raid));
         parsers.put(RaidRoom.WARDENS, new WardensParser(raid));
+        parsers.put(RaidRoom.OCELLUS, new OcellusParser(raid));
     }
 
     public Map<Integer, String> getLines(RaidRoom room)
