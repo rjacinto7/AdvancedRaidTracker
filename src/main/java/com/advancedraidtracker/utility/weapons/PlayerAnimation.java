@@ -119,6 +119,54 @@ public enum PlayerAnimation
 	VENG_APPLIED("Veng Applied", "VA", new Color(0, 0, 0, 0), -1, new int[]{-3}, new int[]{}, new int[]{}, new int[]{}, 0),
 	ELDER_MAUL_SPEC("Elder Maul Spec", "EM", new Color(100, 60, 60), 6, new int[]{11124},new int[]{},new int[]{ItemID.ELDER_MAUL, ItemID.ELDER_MAUL_OR}, new int[]{}, 50),
 
+    //The Fractured Archive rewards. Each has separate male/female animations. Item IDs: charged, uncharged.
+    //Thrust (5t) can hit targets behind the main one, which is what the "multihit" animation is assumed to be. Smash is the 3t style.
+    OBLIGATOR_THRUST("Obligator Thrust", "OB", new Color(120, 60, 160), 5, new int[]{15123, 15131}, new int[]{}, new int[]{34715, 34717}, new int[]{}, 0),
+    OBLIGATOR_SMASH("Obligator Smash", "ob", new Color(120, 60, 160), 3, new int[]{15122, 15130}, new int[]{}, new int[]{34715, 34717}, new int[]{}, 0, true),
+    //Fires alternately from each hand. 2t on rapid, 3t otherwise
+    ASCENSION_CROSSBOWS("Ascension Crossbows", "AX", new Color(20, 140, 110), 2, new int[]{15113, 15114, 15115, 15116}, new int[]{}, new int[]{34681}, new int[]{}, 0),
+    ZORYAS_TOME("Zorya's Tome", "zt", new Color(60, 90, 190), 3, new int[]{15139, 15146}, new int[]{}, new int[]{34725, 34727}, new int[]{}, 0, true),
+    ZORYAS_TOME_SPEC("Zorya's Tome Spec", "ZT", new Color(60, 90, 190), 3, new int[]{15140, 15147}, new int[]{}, new int[]{34725, 34727}, new int[]{}, 50),
+    //Maggot King drop
+    CRIMSON_KISTEN("Crimson Kisten", "ck", new Color(170, 20, 50), 4, new int[]{14253, 566}, new int[]{}, new int[]{33631}, new int[]{}, 0, true),
+    CRIMSON_KISTEN_SPEC("Crimson Kisten Spec", "CK", new Color(170, 20, 50), 4, new int[]{14255}, new int[]{}, new int[]{33631}, new int[]{}, 50),
+
+    //Weapons released since the table was last maintained. Raw item IDs are used because the legacy ItemID class stopped being updated.
+    //Entries marked "generic" have no animation of their own in the cache, so they use the standard animations of their weapon type.
+    //Blood Moon Rises
+    HALLOWED_FLAIL("Hallowed Flail", "HF", new Color(190, 170, 90), 4, new int[]{14244, 14249}, new int[]{}, new int[]{33718}, new int[]{}, 0),
+    SUNSPEAR("Sunspear", "sun", new Color(210, 150, 30), 5, new int[]{428, 440, 429}, new int[]{}, new int[]{33722}, new int[]{}, 0, true), //generic
+    SUNSPEAR_SPEC("Sunspear Spec", "SUN", new Color(210, 150, 30), 5, new int[]{14259}, new int[]{}, new int[]{33722}, new int[]{}, 50),
+    HALLOWFELL("Hallowfell", "HFL", new Color(120, 120, 140), 6, new int[]{14467, 14469, 14470}, new int[]{}, new int[]{34027}, new int[]{}, 0),
+    SILVTHRILL_BALLISTA("Silvthrill Ballista", "SBL", new Color(10, 70, 10), 5, new int[]{7218, 7555, 9465, 9466}, new int[]{}, new int[]{33800}, new int[]{}, 0), //generic
+    BLISTERWOOD_SICKLE("Blisterwood/Diamond Sickle", "SK", new Color(150, 40, 40), 5, new int[]{390, 386}, new int[]{}, new int[]{33709, 33711, 33713}, new int[]{}, 0), //generic
+    //Doom of Mokhaiotl / Varlamore
+    EYE_OF_AYAK("Eye of Ayak", "ey", new Color(30, 120, 130), 3, new int[]{12397}, new int[]{}, new int[]{31113, 31115}, new int[]{}, 0, true),
+    EYE_OF_AYAK_SPEC("Eye of Ayak Spec", "EY", new Color(30, 120, 130), 5, new int[]{12394}, new int[]{}, new int[]{31113, 31115}, new int[]{}, 50),
+    ARKAN_BLADE("Arkan Blade", "ar", new Color(200, 90, 20), 4, new int[]{390, 386}, new int[]{}, new int[]{30955}, new int[]{}, 0, true), //generic
+    ARKAN_BLADE_SPEC("Arkan Blade Spec", "AR", new Color(200, 90, 20), 4, new int[]{12297}, new int[]{}, new int[]{30955}, new int[]{}, 30),
+    EARTHBOUND_TECPATL("Earthbound Tecpatl", "ET", new Color(120, 90, 40), 4, new int[]{12342}, new int[]{}, new int[]{30957}, new int[]{}, 0),
+    KERIS_AMASCUT("Keris Partisan of Amascut", "KA", new Color(140, 140, 30), 4, new int[]{381, 419}, new int[]{}, new int[]{30891}, new int[]{}, 0), //generic
+    BELLES_FOLLY("Belle's Folly", "BF", new Color(40, 90, 140), 5, new int[]{386, 390}, new int[]{}, new int[]{31248}, new int[]{}, 0), //generic
+    SOULFLAME_HORN_SPEC("Soulflame Horn Spec", "SFH", new Color(60, 160, 200), 5, new int[]{12150, 12151, 12158, 12159}, new int[]{}, new int[]{30759}, new int[]{}, 25),
+    //While Guthix Sleeps / Araxxor
+    EMBERLIGHT("Emberlight", "em", new Color(220, 110, 20), 4, new int[]{390, 386}, new int[]{}, new int[]{29589}, new int[]{}, 0, true), //generic
+    EMBERLIGHT_SPEC("Emberlight Spec", "EMB", new Color(220, 110, 20), 4, new int[]{11138}, new int[]{}, new int[]{29589}, new int[]{}, 50),
+    BURNING_CLAW_SCRATCH("Burning Claw Scratch", "bc", new Color(200, 80, 10), 4, new int[]{393, 1067}, new int[]{}, new int[]{29577}, new int[]{}, 0, true), //generic
+    BURNING_CLAW_SPEC("Burning Claw Spec", "BC", new Color(200, 80, 10), 4, new int[]{11140}, new int[]{}, new int[]{29577}, new int[]{}, 30),
+    SCORCHING_BOW("Scorching Bow", "scb", new Color(200, 100, 30), 4, new int[]{426}, new int[]{}, new int[]{29591}, new int[]{}, 0, true), //generic
+    SCORCHING_BOW_SPEC("Scorching Bow Spec", "SCB", new Color(200, 100, 30), 4, new int[]{11133}, new int[]{}, new int[]{29591}, new int[]{}, 25),
+    NOXIOUS_HALBERD("Noxious Halberd", "NH", new Color(60, 140, 40), 5, new int[]{440, 428}, new int[]{}, new int[]{29796}, new int[]{}, 0), //generic
+    //Demonic Pacts League echo weapons
+    FANG_OF_THE_HOUND("Fang of the Hound", "fh", new Color(170, 60, 20), 3, new int[]{13753}, new int[]{}, new int[]{33249}, new int[]{}, 0, true),
+    FANG_OF_THE_HOUND_SPEC("Fang of the Hound Spec", "FH", new Color(170, 60, 20), 3, new int[]{13754}, new int[]{}, new int[]{33249}, new int[]{}, 50),
+    LITHIC_SCEPTRE("Lithic Sceptre", "ls", new Color(110, 110, 130), 4, new int[]{1167}, new int[]{}, new int[]{33255, 33257}, new int[]{}, 0, true), //generic
+    LITHIC_SCEPTRE_SPEC("Lithic Sceptre Shatter", "LS", new Color(110, 110, 130), 4, new int[]{13761}, new int[]{}, new int[]{33255, 33257}, new int[]{}, 0),
+    INFERNAL_TECPATL("Infernal Tecpatl", "it", new Color(200, 50, 10), 4, new int[]{13763}, new int[]{}, new int[]{33243}, new int[]{}, 0, true),
+    INFERNAL_TECPATL_SPEC("Infernal Tecpatl Spec", "IT", new Color(200, 50, 10), 4, new int[]{13762}, new int[]{}, new int[]{33243}, new int[]{}, 50),
+    NATURES_RECURVE("Nature's Recurve", "NR", new Color(30, 140, 60), 3, new int[]{426}, new int[]{}, new int[]{33245}, new int[]{}, 0), //generic
+    KINGS_BARRAGE("King's Barrage", "KBG", new Color(60, 120, 200), 5, new int[]{7552}, new int[]{}, new int[]{33251}, new int[]{}, 0), //generic
+
 
     ;
 

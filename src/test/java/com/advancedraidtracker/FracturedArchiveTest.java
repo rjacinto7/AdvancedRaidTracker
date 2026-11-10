@@ -10,7 +10,10 @@ import com.advancedraidtracker.utility.datautility.DataReader;
 import com.advancedraidtracker.utility.datautility.DataWriter;
 import com.advancedraidtracker.utility.datautility.datapoints.Raid;
 import com.advancedraidtracker.utility.datautility.datapoints.tfa.Tfa;
+import com.advancedraidtracker.utility.weapons.AnimationDecider;
+import com.advancedraidtracker.utility.weapons.PlayerAnimation;
 import net.runelite.api.ChatMessageType;
+import net.runelite.api.ItemID;
 import net.runelite.api.Client;
 import net.runelite.api.events.ChatMessage;
 import org.junit.Before;
@@ -130,6 +133,42 @@ public class FracturedArchiveTest
         assertEquals(RaidRoom.DAGONHAI, TfaIDs.getRoomFromBossName("Dagon'hai Elder"));
         assertEquals(RaidRoom.DREADNOTH, TfaIDs.getRoomFromBossName("Dreadnoth the Jellied"));
         assertEquals(RaidRoom.UNKNOWN, TfaIDs.getRoomFromBossName("Verzik Vitur"));
+    }
+
+    @Test
+    public void newWeaponsAreRecognisedOnTheChart()
+    {
+        assertEquals(PlayerAnimation.OBLIGATOR_THRUST, AnimationDecider.getWeapon("15123", "", "-1", 34715));
+        assertEquals(PlayerAnimation.OBLIGATOR_THRUST, AnimationDecider.getWeapon("15131", "", "-1", 34717));
+        assertEquals(PlayerAnimation.OBLIGATOR_SMASH, AnimationDecider.getWeapon("15122", "4423:", "-1", 34715));
+        assertEquals(PlayerAnimation.ASCENSION_CROSSBOWS, AnimationDecider.getWeapon("15113", "", "-1", 34681));
+        assertEquals(PlayerAnimation.ASCENSION_CROSSBOWS, AnimationDecider.getWeapon("15116", "", "-1", 34681));
+        assertEquals(PlayerAnimation.ZORYAS_TOME, AnimationDecider.getWeapon("15146", "", "-1", 34725));
+        assertEquals(PlayerAnimation.ZORYAS_TOME_SPEC, AnimationDecider.getWeapon("15140", "4432:", "-1", 34725));
+        assertEquals(PlayerAnimation.CRIMSON_KISTEN, AnimationDecider.getWeapon("14253", "", "-1", 33631));
+        assertEquals(PlayerAnimation.CRIMSON_KISTEN_SPEC, AnimationDecider.getWeapon("14255", "3908:", "-1", 33631));
+        assertEquals(PlayerAnimation.EYE_OF_AYAK, AnimationDecider.getWeapon("12397", "", "-1", 31113));
+        assertEquals(PlayerAnimation.EYE_OF_AYAK_SPEC, AnimationDecider.getWeapon("12394", "", "-1", 31113));
+        assertEquals(PlayerAnimation.HALLOWFELL, AnimationDecider.getWeapon("14469", "", "-1", 34027));
+        assertEquals(PlayerAnimation.HALLOWED_FLAIL, AnimationDecider.getWeapon("14249", "", "-1", 33718));
+        assertEquals(PlayerAnimation.INFERNAL_TECPATL_SPEC, AnimationDecider.getWeapon("13762", "", "-1", 33243));
+        //Weapons that share generic animations are told apart by the equipped item
+        assertEquals(PlayerAnimation.EMBERLIGHT, AnimationDecider.getWeapon("390", "", "-1", 29589));
+        assertEquals(PlayerAnimation.ARKAN_BLADE, AnimationDecider.getWeapon("390", "", "-1", 30955));
+        assertEquals(PlayerAnimation.BLADE_OF_SAELDOR, AnimationDecider.getWeapon("390", "", "-1", ItemID.BLADE_OF_SAELDOR));
+        assertEquals(PlayerAnimation.BURNING_CLAW_SCRATCH, AnimationDecider.getWeapon("393", "", "-1", 29577));
+        assertEquals(PlayerAnimation.BURNING_CLAW_SPEC, AnimationDecider.getWeapon("11140", "", "-1", 29577));
+        assertEquals(PlayerAnimation.CLAW_SCRATCH, AnimationDecider.getWeapon("393", "", "-1", ItemID.DRAGON_CLAWS));
+        assertEquals(PlayerAnimation.SCORCHING_BOW, AnimationDecider.getWeapon("426", "", "-1", 29591));
+        assertEquals(PlayerAnimation.NOXIOUS_HALBERD, AnimationDecider.getWeapon("440", "", "-1", 29796));
+        assertEquals(PlayerAnimation.CHALLY_WHACK, AnimationDecider.getWeapon("440", "", "-1", ItemID.CRYSTAL_HALBERD));
+        assertEquals(PlayerAnimation.LITHIC_SCEPTRE, AnimationDecider.getWeapon("1167", "", "-1", 33255));
+        assertEquals(PlayerAnimation.SANG, AnimationDecider.getWeapon("1167", "", "-1", ItemID.SANGUINESTI_STAFF));
+        assertEquals(PlayerAnimation.KINGS_BARRAGE, AnimationDecider.getWeapon("7552", "", "-1", 33251));
+        //Existing weapons still resolve to themselves
+        assertEquals(PlayerAnimation.SCYTHE, AnimationDecider.getWeapon("8056", "", "-1", ItemID.SCYTHE_OF_VITUR));
+        assertEquals(PlayerAnimation.TBOW, AnimationDecider.getWeapon("426", "", "-1", ItemID.TWISTED_BOW));
+        assertEquals(PlayerAnimation.DRAGON_CROSSBOW, AnimationDecider.getWeapon("7552", "", "-1", ItemID.DRAGON_CROSSBOW));
     }
 
     @Test

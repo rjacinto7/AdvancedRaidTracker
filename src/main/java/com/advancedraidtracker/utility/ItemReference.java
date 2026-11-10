@@ -44,7 +44,19 @@ public class ItemReference
 					"strength",
 					"combat bracelet",
 					"rancor",
-					"anchor"
+					"anchor",
+					"obligator",
+					"kisten",
+					"emberlight",
+					"tecpatl",
+					"flail",
+					"sunspear",
+					"hallowfell",
+					"sickle",
+					"soulflame",
+					"arkan",
+					"folly",
+					"fang of the hound"
             },
             {
                     "masori",
@@ -65,7 +77,10 @@ public class ItemReference
                     "quiver",
                     "eclipse",
                     "ralos",
-					"dizana"
+					"dizana",
+					"ascension",
+					"ballista",
+					"king's barrage"
             },
             {
                     "ancestral",
@@ -82,7 +97,11 @@ public class ItemReference
                     "ice",
                     "ward",
                     "dawnbringer",
-					"ancient sceptre"
+					"ancient sceptre",
+					"zorya",
+					"ayak",
+					"lithic",
+					"quadrant"
             }
     };
     public static final int MELEE = 1;
