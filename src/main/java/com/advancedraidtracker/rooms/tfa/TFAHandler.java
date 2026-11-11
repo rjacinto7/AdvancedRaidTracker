@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.events.ChatMessage;
+import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.client.util.Text;
 
@@ -327,6 +328,59 @@ public class TFAHandler extends RoomHandler
             ocellusPhase = 3;
             clog.addLine(LogID.TFA_OCELLUS_P3_STARTED, roomTick);
             addLiveLine(roomTick, "P3");
+        }
+    }
+
+    private static final String[] RESTORE_NAMES = {"prayer potion", "super restore", "sanfew serum", "restore potion"};
+    private static final String[] UNIQUE_NAMES = {"rondache", "zorya's tome", "horn of bran", "ascension crossbow", "obligator"};
+
+    /**
+     * Counts food eaten and potion doses drunk, from the menu option the player clicked in their inventory.
+     * Counts clicks, so a click that fails (full HP, no dose left) still counts; good enough for a trend stat.
+     */
+    public void updateMenuOptionClicked(MenuOptionClicked event)
+    {
+        String option = Text.removeTags(event.getMenuOption());
+        String item = Text.removeTags(event.getMenuTarget()).trim().toLowerCase();
+        if (item.isEmpty() || event.getItemId() <= 0)
+        {
+            return;
+        }
+        if (option.equals("Eat"))
+        {
+            clog.addLine(LogID.TFA_FOOD_EATEN, "1", getName());
+        } else if (option.equals("Drink"))
+        {
+            boolean restore = false;
+            for (String name : RESTORE_NAMES)
+            {
+                restore |= item.contains(name);
+            }
+            //One dose is consumed per click
+            clog.addLine(restore ? LogID.TFA_RESTORE_DOSES_DRUNK : LogID.TFA_POTION_DOSES_DRUNK, "1", getName());
+        }
+    }
+
+    /**
+     * Records chest loot. Uniques are recognised by name since the item ids were not observed in-game.
+     *
+     * @param itemNames names of every item in the chest
+     * @param totalValue GE value of the whole chest
+     */
+    public void recordLoot(List<String> itemNames, long totalValue)
+    {
+        clog.addLine(LogID.TFA_LOOT_VALUE_RECEIVED, String.valueOf(totalValue));
+        for (String name : itemNames)
+        {
+            String lower = name.toLowerCase();
+            for (String unique : UNIQUE_NAMES)
+            {
+                if (lower.contains(unique))
+                {
+                    clog.addLine(LogID.TFA_UNIQUE_RECEIVED, "1", name.replace(",", ""));
+                    break;
+                }
+            }
         }
     }
 

@@ -89,7 +89,7 @@ public class ButtonEditorViewColumn extends DefaultCellEditor
             } else if (data.get(row) instanceof Tfa)
             {
                 Tfa tfaData = (Tfa) data.get(row);
-                ViewTFARaid raid = new ViewTFARaid(tfaData, config);
+                ViewTFARaid raid = new ViewTFARaid(tfaData, config, data);
                 raid.open();
             }
 

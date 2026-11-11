@@ -38,6 +38,8 @@ import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.EventBus;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.plugins.loottracker.LootReceived;
+import net.runelite.client.game.ItemStack;
 import net.runelite.client.events.PartyChanged;
 import net.runelite.client.game.ItemManager;
 import net.runelite.client.game.SpriteManager;
@@ -1603,8 +1605,38 @@ public class AdvancedRaidTrackerPlugin extends Plugin
     }
 
     @Subscribe
+    public void onMenuOptionClicked(MenuOptionClicked event)
+    {
+        if (inTFA)
+        {
+            tfaHandler.updateMenuOptionClicked(event);
+        }
+    }
+
+    @Subscribe
+    public void onLootReceived(LootReceived event)
+    {
+        if (!inTFA)
+        {
+            return;
+        }
+        List<String> names = new ArrayList<>();
+        long value = 0;
+        for (ItemStack stack : event.getItems())
+        {
+            names.add(itemManager.getItemComposition(stack.getId()).getName());
+            value += (long) itemManager.getItemPrice(stack.getId()) * stack.getQuantity();
+        }
+        tfaHandler.recordLoot(names, value);
+    }
+
+    @Subscribe
     public void onActorDeath(ActorDeath event)
     {
+        if (inTFA && event.getActor() instanceof Player)
+        {
+            clog.addLine(PLAYER_DIED, event.getActor().getName(), String.valueOf(client.getTickCount() - tfaHandler.roomStartTick));
+        }
         if (inTheatre)
         {
             Actor a = event.getActor();

@@ -305,6 +305,11 @@ public enum DataPoint
     OCELLUS_P2_DURATION("Ocellus P2 Duration", types.TIME_SPLIT, OCELLUS, MenuType.TIME),
     OCELLUS_P3_SPLIT("Ocellus P3 Split", types.TIME_SPLIT, OCELLUS, MenuType.TIME),
     OCELLUS_P3_DURATION("Ocellus P3 Duration", types.TIME_SPLIT, OCELLUS, MenuType.TIME),
+    TFA_FOOD_EATEN_COUNT("TFA Food Eaten", types.OTHER_INT, ALL, MenuType.MISC),
+    TFA_POTION_DOSES("TFA Potion Doses", types.OTHER_INT, ALL, MenuType.MISC),
+    TFA_RESTORE_DOSES("TFA Restore Doses", types.OTHER_INT, ALL, MenuType.MISC),
+    TFA_LOOT_VALUE("TFA Loot Value", types.OTHER_INT, ANY, MenuType.MISC),
+    TFA_UNIQUES("TFA Uniques", types.OTHER_INT, ANY, MenuType.MISC),
 
 
     ;;

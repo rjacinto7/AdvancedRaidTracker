@@ -115,6 +115,29 @@ public class FracturedArchiveTest
     }
 
     @Test
+    public void suppliesAndLootAreParsed() throws Exception
+    {
+        game("Challenge started: Archive Guardian.");
+        clog.addLine(LogID.TFA_FOOD_EATEN, "1", "Guardian");
+        clog.addLine(LogID.TFA_FOOD_EATEN, "1", "Guardian");
+        clog.addLine(LogID.TFA_POTION_DOSES_DRUNK, "1", "Guardian");
+        clog.addLine(LogID.TFA_RESTORE_DOSES_DRUNK, "1", "Guardian");
+        tick += 150;
+        game("Challenge complete: Archive Guardian. Duration: 1:30. Total: 1:45");
+        handler.recordLoot(Arrays.asList("Coins", "Zorya's tome", "Rondache"), 1234567L);
+        Raid raid = readBack();
+        assertEquals(2, raid.get(DataPoint.TFA_FOOD_EATEN_COUNT, RaidRoom.ARCHIVE_GUARDIAN));
+        assertEquals(1, raid.get(DataPoint.TFA_POTION_DOSES, RaidRoom.ARCHIVE_GUARDIAN));
+        assertEquals(1, raid.get(DataPoint.TFA_RESTORE_DOSES, RaidRoom.ARCHIVE_GUARDIAN));
+        assertEquals(1234567, raid.get(DataPoint.TFA_LOOT_VALUE));
+        assertEquals(2, raid.get(DataPoint.TFA_UNIQUES));
+        com.advancedraidtracker.utility.datautility.datapoints.tfa.TfaStatistics.DryStreak streak =
+                com.advancedraidtracker.utility.datautility.datapoints.tfa.TfaStatistics.getDryStreak((Tfa) raid, Arrays.asList(raid));
+        assertTrue(streak.receivedUnique);
+        assertEquals(1, streak.chestsRecorded);
+    }
+
+    @Test
     public void timesAreConvertedToTicks()
     {
         assertEquals(150, TFAHandler.parseTicks("1:30"));

@@ -6,6 +6,7 @@ import com.advancedraidtracker.ui.BaseFrame;
 import com.advancedraidtracker.utility.RoomUtil;
 import com.advancedraidtracker.utility.datautility.DataPoint;
 import com.advancedraidtracker.utility.datautility.datapoints.tfa.Tfa;
+import com.advancedraidtracker.utility.datautility.datapoints.tfa.TfaStatistics;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,20 +18,30 @@ import static com.advancedraidtracker.utility.UISwingUtility.*;
 public class ViewTFARaid extends BaseFrame
 {
     private final Tfa tfaData;
+    private final List<? extends com.advancedraidtracker.utility.datautility.datapoints.Raid> allRaids;
     private final String red = "<html><font color='#FF0000'>";
     private final String green = "<html><font color='#44AF33'>";
     private final String blue = "<html><font color='#6666DD'>";
 
     public ViewTFARaid(Tfa tfaData, AdvancedRaidTrackerConfig config)
     {
+        this(tfaData, config, java.util.Collections.emptyList());
+    }
+
+    /**
+     * @param allRaids raids to compare against for dry streaks and same-party-size bests
+     */
+    public ViewTFARaid(Tfa tfaData, AdvancedRaidTrackerConfig config, List<? extends com.advancedraidtracker.utility.datautility.datapoints.Raid> allRaids)
+    {
         this.tfaData = tfaData;
+        this.allRaids = allRaids;
         setTitle("View Raid");
-        setPreferredSize(new Dimension(800, 560));
+        setPreferredSize(new Dimension(800, 640));
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
         JPanel topContainer = getThemedPanel();
         topContainer.setLayout(new GridLayout(1, 2));
-        topContainer.setPreferredSize(new Dimension(800, 210));
+        topContainer.setPreferredSize(new Dimension(800, 290));
         topContainer.add(getSummaryPanel());
         topContainer.add(getSplitsPanel());
 
@@ -96,9 +107,34 @@ public class ViewTFARaid extends BaseFrame
             rightPanel.add(getThemedLabel("    " + player));
         }
 
+        rightPanel.add(getThemedLabel());
+        rightPanel.add(getThemedLabel("Food eaten: " + sumOverRooms(DataPoint.TFA_FOOD_EATEN_COUNT)));
+        rightPanel.add(getThemedLabel("Potion doses: " + sumOverRooms(DataPoint.TFA_POTION_DOSES) + " (restore: " + sumOverRooms(DataPoint.TFA_RESTORE_DOSES) + ")"));
+        addLootLabels(rightPanel);
+
         panel.add(leftPanel);
         panel.add(rightPanel);
         return panel;
+    }
+
+    private void addLootLabels(JPanel panel)
+    {
+        int lootValue = tfaData.get(DataPoint.TFA_LOOT_VALUE);
+        if (lootValue > 0)
+        {
+            panel.add(getThemedLabel("Loot value: " + String.format("%,d", lootValue) + " gp"));
+            panel.add(getThemedLabel("Uniques: " + tfaData.get(DataPoint.TFA_UNIQUES)));
+            TfaStatistics.DryStreak streak = TfaStatistics.getDryStreak(tfaData, allRaids);
+            panel.add(getThemedLabel(streak.receivedUnique ? "Unique after " + streak.streak + " dry chests" : "Dry streak: " + streak.streak + " chests"));
+        } else
+        {
+            panel.add(getThemedLabel("Loot: not recorded"));
+        }
+        int best = TfaStatistics.getBestTimeForScale(tfaData.getScale(), allRaids);
+        if (best > 0)
+        {
+            panel.add(getThemedLabel("Best " + tfaData.getScaleString() + ": " + RoomUtil.time(best)));
+        }
     }
 
     private JPanel getSplitsPanel()
@@ -160,6 +196,9 @@ public class ViewTFARaid extends BaseFrame
 
         panel.add(getThemedLabel("Prayer Used: "));
         panel.add(getThemedLabel(blue + tfaData.get(DataPoint.PRAYER_USED, room)));
+
+        panel.add(getThemedLabel("Food / Potion / Restore: "));
+        panel.add(getThemedLabel(tfaData.get(DataPoint.TFA_FOOD_EATEN_COUNT, room) + " / " + tfaData.get(DataPoint.TFA_POTION_DOSES, room) + " / " + tfaData.get(DataPoint.TFA_RESTORE_DOSES, room)));
 
         return panel;
     }

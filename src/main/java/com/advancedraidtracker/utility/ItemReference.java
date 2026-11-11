@@ -4,7 +4,11 @@ public class ItemReference
 {
 
     public static String[][] ITEMS = {
-            {"none", "elite void", "void knight", "blood fury", "barrows gloves", "Aranea boots"},
+            {"none", "elite void", "void knight", "blood fury", "barrows gloves", "Aranea boots",
+                    "ring of suffering", "lightbearer", "ring of the gods", "treasonous", "tyrannical", "berserker ring",
+                    "ring of endurance", "ring of wealth", "ring of recoil", "ring of shadows", "bracelet of ethereum",
+                    "ancient blessing", "rune pouch", "divine rune pouch", "slayer helmet", "black mask", "ghommal", "ardougne cloak",
+                    "max cape", "mythical cape"},
             {
                     "torva",
                     "defender",
@@ -56,7 +60,26 @@ public class ItemReference
 					"soulflame",
 					"arkan",
 					"folly",
-					"fang of the hound"
+					"fang of the hound",
+					"ultor",
+					"bellator",
+					"maul",
+					"lance",
+					"bludgeon",
+					"abyssal",
+					"soulreaper",
+					"rancour",
+					"oathplate",
+					"sulphur blades",
+					"macuahuitl",
+					"blood moon",
+					"sunfire fanatic",
+					"justiciar",
+					"neitiznot",
+					"guardian boots",
+					"ghrazi",
+					"avernic",
+					"burning claws"
             },
             {
                     "masori",
@@ -80,7 +103,23 @@ public class ItemReference
 					"dizana",
 					"ascension",
 					"ballista",
-					"king's barrage"
+					"king's barrage",
+					"ava's",
+					"accumulator",
+					"attractor",
+					"twisted bow",
+					"zaryte",
+					"venator",
+					"webweaver",
+					"craw",
+					"archers ring",
+					"necklace of anguish",
+					"bolts",
+					"arrow",
+					"tonalztics",
+					"atlatl",
+					"eclipse moon",
+					"ranger boots"
             },
             {
                     "ancestral",
@@ -101,7 +140,23 @@ public class ItemReference
 					"zorya",
 					"ayak",
 					"lithic",
-					"quadrant"
+					"quadrant",
+					"sanguinesti",
+					"shadow",
+					"nightmare staff",
+					"harmonised",
+					"volatile",
+					"eldritch",
+					"magus ring",
+					"seers ring",
+					"arcane",
+					"elidinis",
+					"accursed",
+					"thammaron",
+					"warped sceptre",
+					"blue moon",
+					"wand",
+					"tome of"
             }
     };
     public static final int MELEE = 1;

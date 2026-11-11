@@ -59,7 +59,7 @@ public class HoverBox
     {
         for (String s : items)
         {
-            if (item.toLowerCase().contains(s))
+            if (item.toLowerCase().contains(s.toLowerCase()))
             {
                 return true;
             }
